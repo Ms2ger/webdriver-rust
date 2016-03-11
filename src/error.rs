@@ -1,5 +1,6 @@
 use hyper::status::StatusCode;
 use rustc_serialize::json::{Json, ToJson, ParserError, DecoderError};
+use rustc_serialize::base64::FromBase64Error;
 use std::collections::BTreeMap;
 use std::convert::From;
 use std::error::Error;
@@ -177,5 +178,21 @@ impl From<DecoderError> for WebDriverError {
         WebDriverError::new(ErrorStatus::UnknownError,
                             &format!(
                                 "Could not decode json string:\n{}", err.description())[..])
+    }
+}
+
+impl From<FromBase64Error> for WebDriverError {
+    fn from(err: FromBase64Error) -> WebDriverError {
+        WebDriverError::new(ErrorStatus::UnknownError,
+                            &format!(
+                                "Could not decode string from base64:\n{}", err.description())[..])
+    }
+}
+
+impl From<Box<Error>> for WebDriverError {
+    fn from(err: Box<Error>) -> WebDriverError {
+        WebDriverError::new(ErrorStatus::UnknownError,
+                            &format!(
+                                "Unknown error:\n{}", err.description())[..])
     }
 }
